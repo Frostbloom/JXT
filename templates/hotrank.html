@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>首页</title>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/blog/bs/js/bootstrap.min.js"></script>
+    <script src="{% static 'plugins/daterangepicker/moment.min.js' %}"></script>
+    <script src="{% static 'plugins/fullcalendar/fullcalendar.min.js' %}"></script>
+    <script src="{% static 'js/plugins/layer/layer.js' %}"></script>
+    <script src="{% static 'plugins/select2/select2.full.min.js' %}"></script>
+
+    <style>
+        body {
+            cursor: url(https://fastly.jsdelivr.net/gh/mirai-mamori/web-img/img/Nor.cur), auto;
+        }
+        button {
+        cursor: url(https://fastly.jsdelivr.net/gh/mirai-mamori/web-img/img/Ayu.cur), auto;
+        }
+        a:active {
+            cursor: url(https://fastly.jsdelivr.net/gh/mirai-mamori/web-img/img/Work.cur), alias;
+        }
+        a {
+        cursor: url(https://fastly.jsdelivr.net/gh/mirai-mamori/web-img/img/Texto.cur), auto;
+        }
+        span{
+        cursor: url(https://fastly.jsdelivr.net/gh/mirai-mamori/web-img/img/no.cur), auto;
+        }
+    </style>
+</head>
+<body>
+    <!--导航-->
+    <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+        <div class="ui container">
+            <div class="ui inverted secondary stackable menu">
+                <h1 class="ui teal header item"><i class="sun icon"></i>交小团</h1>
+                    <a href="/index/1/1" class="m-item item m-mobile-hide"><i class="home icon"></i>首页</a>
+                    <a href="/hotrank/1" class="m-item item m-mobile-hide"><i class="idea icon"></i>热门</a>
+                    <a href="{% url 'searchtag' %}" class="m-item item m-mobile-hide"><i class="tags icon"></i>话题</a>
+                    <a href="{% url 'myidol' %}" class="m-item item m-mobile-hide"><i class="info icon"></i>我的关注</a>
+                    <a href="/{{ op.user.username }}/posts/{{ op.pk }}" class="m-item item m-mobile-hide"><i class="cube icon"></i>随机浏览</a>
+                <div class="m-item  right item m-mobile-hide">
+                    <div class="ui icon input">
+                        <form action = "{% url 'index' 1 1 %}" method="get">
+                            {% csrf_token %}
+                            <input type ="text" size="10" name="keyword" placeholder="标题搜索">
+                            <input type = "submit" value="搜索">
+                        </form>
+                        <i class="search link icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="ui menu toggle black icon button m-top-right m-hide">
+            <i class="sidebar icon"></i>
+        </a>
+    </nav>
+
+    <!--中间-->
+    <div class="m-padded-tb-max">
+        <div class="ui container">
+            <div class="ui stackable grid">
+                <!--左边-->
+                 <div class="five wide column">
+                    <!--个人信息-->
+                    <div class="ui segment">
+                        <div class="ui secondary segment">
+                            <h3 class="ui teal header item"><i class="bookmark icon"></i>欢迎你，{{ request.user.username }}</h3>
+                        </div>
+                                <div class="ui segment">
+                                    <a href="/clubinfo/{{ request.user.username }}/"  class="m-black m-text-thin"><i class="home icon"></i>&nbsp;&nbsp;个人主页</a>
+                                </div>
+                                <div class="ui segment">
+                                    <a href="/cgpwd/"  class="m-black m-text-thin"><i class="key icon"></i>&nbsp;&nbsp;修改密码</a>
+                                </div>
+                                <div class="ui segment">
+                                    <a href="/modifya/"  class="m-black m-text-thin"><i class="user icon"></i>&nbsp;&nbsp;修改头像</a>
+                                </div>
+                                <div class="ui segment">
+                                    <a href="/createapplication/" target="_blank" class="m-black m-text-thin"><i class="certificate icon"></i>&nbsp;&nbsp;申请认证</a>
+                                </div>
+                                <div class="ui segment">
+                                    <a href="/logout/"  class="m-black m-text-thin"><i class="stop icon"></i>&nbsp;&nbsp;注销</a>
+                                </div>
+                        </ul>
+                    </div>
+                    <!--日历面板-->
+                    <div class="ui segment">
+                        <div class="ui secondary segment">
+                            <h3 class="ui teal header item"><i class="bookmark icon"></i>日历</h3>
+                        </div>
+                        <div class="ui segment">
+                            <a href="/myreport" class="m-black m-text-thin" id="watchreport"><i class="eye icon"></i>&nbsp;&nbsp;查看日历</a>
+                        </div>
+                        {% if status3 %}
+                        <h4><i class="star icon"></i>团长特权</h4>
+                        <div class="ui segment">
+                            <a href="/myreport"  class="m-black m-text-thin" id="myreport"><i class="magic icon"></i>&nbsp;&nbsp;创建日历</a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+                <!--右边-->
+                <div class="eleven wide column">
+                    <!--header-->
+                    <div class="ui top segment">
+                        <div class="ui middle aligned two column grid">
+                            <div class="column">
+                                <h3 class="ui teal header">火爆的活动，总有一个适合你</h3>
+                            </div>
+                            <div class="right aligned column">
+                                共&nbsp; <h3 class="ui orange header m-inline-block m-text-thin">{{ countpost }}</h3> &nbsp;篇
+                            </div>
+                        </div>
+                    </div>
+                    <!--博客主题-->
+                    <div class="col-md-6">
+                        <div class="post_list">
+                            {% for post in post_list %}
+                            <div class="ui segment">
+                                <h5><a href="/{{ post.user.username }}/posts/{{ post.pk }}" class="m-text-bold m-text-spaced m-opacity-tiny">{{ post.title }}</a></h5>
+                                <div class="post-desc">
+                                    <div>
+                                    <a class="m-text-thin m-text-spaced m-opacity-tiny">
+                                        <!-- {{ post.desc }} -->
+                                    </a>
+                                    </div>
+                                </div>
+                                <div class="small pub_info">
+                                    <div class="center">
+                                    <span class="media-left">
+                                        <a href="/clubinfo/{{ post.user.username }}/"><img width="56" height="56" src="/media/{{ post.user.avatar }}" alt=""></a>
+                                    </span>
+                                    </div>
+                                    <br>
+                                    <span><a href="/clubinfo/{{ post.user.username }}/"><i class="user icon"></i>发布者：{{ post.user.username }}</a></span> &nbsp;&nbsp;&nbsp;
+                                    <span>发布于<i class="calendar icon"></i>{{ post.create_time|date:"Y-m-d H:i" }}</span>&nbsp;&nbsp;
+                                    <i class="comment icon"></i>评论({{ post.comment_count }})&nbsp;&nbsp;
+                                    <i class="like icon"></i>点赞({{ post.up_count }})&nbsp;&nbsp;
+                                    {% for tag in post.tags.all %}
+                                    <i class="tag icon"></i><a href="/index/2/1?keyword={{tag.title}}"class="m-item item m-mobile-hide">{{ tag.title }}</a>&nbsp;&nbsp;
+                                    {% endfor %}
+                                </div>
+                            </div>
+                                <hr>
+                            {% endfor %}
+                                <!--博客底部-->
+                            <div class="ui bottom attached segment">
+                                <div class="ui middle aligned two column grid">
+                                    <div class="column">
+                                        <a href="{% url 'hotrank' pindex|add:-1 %}" class="ui mini teal basic button">上一页</a>
+                                    </div>
+                                    <div class="right aligned column">
+                                        <a href="{% url 'hotrank' pindex|add:1 %}" class="ui mini teal basic button">下一页</a>
+                                    </div>
+                                    {% for y in pagerange %}
+                                    <a href = "{% url 'hotrank' y %}"> {{y}} </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <footer class="ui inverted vertical segment m-padded-tb-max">
+        <div class="ui center aligned container">
+            <div class="ui inverted divided stackable grid">
+                <div class="six wide column">
+                    <div class="ui horizontal divider header teal m-text-thin">本网站简介</div>
+                    <div class="ui inverted link list">
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">欢迎您使用我们的网站，本网站旨在连接学生组织与同学们</p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">让学生组织的宣传更高效，让同学们的了解和参与更方便</p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">让校园的课外生活更加丰富多彩</p>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="ui horizontal divider header teal m-text-thin">关于我们</div>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">本网站开发者经验有限，欢迎您提出宝贵的意见</p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">我们会竭尽全力提供更好的服务</p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">开发者：软件工程一组</p>
+                </div>
+                <div class="three wide column">
+                    <div class="ui inverted link list">
+                        <!--二维码-->
+                        <div class="ui horizontal divider header teal m-text-thin">扫码反馈</div>
+                            <div class="ui centered card" style="width: 13em;">
+                        <img src="/static/image/wechat.jpg" alt="" class="ui  rounded image">
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui inverted section divider"></div>
+            <p class="m-text-thin m-text-spaced m-opacity-tiny"> © 2022 Designed by JXT_GS</p>
+        </div>
+    </footer>
+
+<script src="https://fastly.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://fastly.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+    <script>
+        $('.menu.toggle').click(function () {
+            $('.m-item').toggleClass('m-mobile-hide')
+        })
+
+        $("#myreport").click(function () {
+            layer.open({
+            type: 2,
+            title: '活动详情',
+            shadeClose: false,
+            maxmin: true,
+            area: ['950px', '500px'],
+            content: "/myreport",
+
+            });
+        })
+
+        $("#watchreport").click(function () {
+            layer.open({
+            type: 2,
+            title: '活动详情',
+            shadeClose: false,
+            maxmin: true,
+            area: ['950px', '500px'],
+            content: "/myreport",
+
+            });
+        })
+
+        // document.onmousedown = function(){
+        //     if(event.button == 2){
+        //         alert("当前页面不能使用右键！");
+        //         return false;
+        //     }
+        // }
+    </script>
+
+
+</body>
+</html>

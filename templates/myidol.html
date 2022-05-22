@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% csrf_token %}
+{% load static %}
+    <!--中间-->
+    <div class="m-padded-tb-max m-container-small">
+        <div class="ui container">
+            <!--header-->
+            <div class="ui top segment">
+                <div class="ui middle aligned two column grid">
+                    <div class="column">
+                        <h3 class="ui teal header">我的关注</h3>
+                    </div>
+                    <div class="right aligned column">
+                        共 <h3 class="ui orange header m-inline-block m-text-thin">{{myidol.count}}</h3>个
+                    </div>
+                </div>
+            </div>
+            <!--分类导航-->
+            <div class="ui segment">
+                <div class="ui middle aligned three column grid">
+                {% for idol in idollist %}
+                    <div class="center aligned column">
+<!--                    <div class="ui labeled button m-margin-tb-tiny">-->
+                        <a href="/clubinfo/{{ idol.username }}/" class="ui basic yellow button">
+                            <img width="56" height="56" src="/media/{{ idol.avatar }}" alt="">
+                            <hr>
+                            <div>{{ idol.username }}</div>
+                        </a>
+<!--                    </div>-->
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

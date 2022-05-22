@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% csrf_token %}
+{% load static %}
+<link rel="stylesheet" href="/static/blog/bs/css/bootstrap.css">
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+<div class="container">
+    <div class="row">
+         <div class="col-md-6 col-lg-offset-3">
+                <div align="center" style="font-size:30px;font-weight:bold">修改密码</div>
+             <br>
+                <form id="form">
+                    {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                 {{ field }} <span class="error pull-right"></span>
+                </div>
+                {% endfor %}
+
+
+                <input type="button" class="btn btn-default cgpwd_btn" value="提交"><span class="error"></span>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

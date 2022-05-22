@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block content %}
+{% csrf_token %}
+<div class="two wide column">
+    <br>
+</div>
+<div class="twelve wide column">
+    <div class="ui segment">
+        <div class="ui first segment">
+            <h3 class="ui teal header"><i class="bookmark icon"></i>标题：{{ post_obj.title }}</h3>
+        </div>
+        <div class="ui first segment">
+            <h5 class="ui teal header"><i class="bookmark icon"></i>简介：{{ post_obj.desc }}</h5>
+        </div>
+        <div class="ui first segment">
+            <i class="bookmark icon"></i>内容：{{ post_obj.content|safe }}
+        </div>
+        <div class="ui first segment">
+            <div class="clearfix">
+                <div id="div_digg">
+
+                     <div class="ui middle aligned three column grid">
+
+                         <div class="center aligned column">
+                            <div class="diggit action">
+                                <button class="ui basic orange circular button">
+                                    <i class="like outline icon"></i>赞同<i class="arrow right icon"></i>
+
+                                </button>
+                                <span class="diggnum" id="digg_count" style="color:orange">{{ post_obj.up_count }}</span>
+                            </div>
+                         </div>
+
+                         <div class="center aligned column">
+                            <div class="buryit action">
+                                <button class="ui basic orange circular button">
+                                    <i class="dislike outline icon"></i>反对<i class="arrow right icon"></i>
+                                </button>
+                                <span class="burynum" id="bury_count" style="color:orange">{{ post_obj.down_count }}</span>
+                            </div>
+
+                         </div>
+
+                         <div class="center aligned column">
+                            <div class="diggword" id="digg_tips" style="color:red;text-align:center"></div>
+                        </div>
+
+                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui segment">
+            <div class="ui middle aligned four column grid">
+                <div class="center aligned column">
+                    <a href="/{{ user.username }}/posts/{{ page|add:-1 }}" class="ui mini teal basic button">该团长上一篇</a>
+                </div>
+                <div class="center aligned column">
+                    <a href="/{{ user.username }}/posts/{{ page|add:1 }}" class="ui mini teal basic button">该团长下一篇</a>
+                </div>
+                <div class="center aligned column">
+                    <a href="/index/1/1" class="ui mini teal basic button">返回首页</a>
+                </div>
+                <div class="center aligned column">
+                    <a href="/{{ op.user.username }}/posts/{{ op.pk }}" class="ui mini teal basic button">随便再逛逛</a>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="ui segment">
+            <p class="ui teal header"><i class="comments icon"></i>评论列表 </p>
+                <hr>
+            {% for comment in comment_list %}
+                <div class="ui segment">
+                    <div >
+                        <h4 ># {{ forloop.counter }}楼</h4> &nbsp;&nbsp;
+                        <span><i class="calendar icon"></i>{{ comment.create_time|date:"Y-m-d H:i" }}</span>&nbsp;&nbsp;
+                        <a href="/clubinfo/{{ comment.user.username }}/"><span><i class="user icon"></i>{{ comment.user.username }}</span></a>
+                        <a class="pull-right reply_btn" username="{{ comment.user.username }}" comment_pk="{{ comment.pk }}">
+                            &nbsp;<i class="talk outline icon"></i>回复</a>
+                    </div>
+                    <br>
+                    {% if comment.parent_comment_id %}
+                        <div class="ui secondary segment">
+                            <i class="arrow right icon"></i><i>{{ comment.parent_comment.user.username }}: {{ comment.parent_comment.content }}</i>
+                        </div>
+                    {% endif %}
+
+                    <div class="ui segment">
+                        <h5><i class="talk before icon"></i>{{ comment.content }}</h5>
+                    </div>
+
+                </div>
+                <hr>
+
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="ui segment">
+            <p class="ui teal header"><i class="talk icon"></i>发表评论</p>
+            <hr>
+            <div class="ui segment">
+                <h4>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="30"
+                         value="{{ request.user.username }}">
+                </h4>
+            </div>
+            <div class="ui segment">
+                <h4>评论内容:</h4>
+                <textarea name="" id="comment_content" cols="100" rows="10"></textarea>
+            </div>
+            <div class="center aligned column">
+            <button class="ui basic green circular button">提交评论</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// 点赞请求
+$("#div_digg .action").click(function () {
+var is_up = $(this).hasClass("diggit");
+
+
+$obj = $(this).children("span");
+
+$.ajax({
+    url: "/digg/",
+    type: "post",
+    data: {
+        "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+        "is_up": is_up,
+        "post_id": "{{ post_obj.pk }}",
+    },
+    success: function (data) {
+        console.log(data);
+
+        if (data.state) {
+            var val = parseInt($obj.text());
+            $obj.text(val + 1);
+        }
+        else {
+            var val = data.handled ? "您已经推荐过!" : "您已经反对过!";
+            $("#digg_tips").html(val);
+
+            setTimeout(function () {
+                $("#digg_tips").html("")
+            }, 1000)
+
+        }
+
+    }
+})
+
+})
+
+// 评论请求
+var pid = "";
+
+$(".comment_btn").click(function () {
+
+var content = $("#comment_content").val();
+
+if (pid) {
+    var index = content.indexOf("\n");
+    content = content.slice(index + 1)
+}
+
+
+$.ajax({
+    url: "/comment/",
+    type: "post",
+    data: {
+        "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+        "post_id": "{{ post_obj.pk }}",
+        "content": content,
+        pid: pid
+    },
+    success: function (data) {
+
+        console.log(data);
+
+        var create_time = data.create_time;
+        var username = data.username;
+        var content = data.content;
+
+        var s = `
+           <li class="list-group-item">
+              <div>
+                  <span>${create_time}</span>&nbsp;&nbsp;
+                  <a href=""><span>${username}</span></a>
+
+              </div>
+              <div class="comment_con">
+                  <p>${content}</p>
+              </div>
+
+            </li>`;
+
+        $("ul.comment_list").append(s);
+
+        // 清空评论框
+        pid = "",
+        $("#comment_content").val("");
+
+        location.reload()
+
+    }
+})
+
+
+});
+
+// 回复按钮事件
+
+$(".reply_btn").click(function () {
+
+$('#comment_content').focus();
+var val = "@" + $(this).attr("username") + "\n";
+$('#comment_content').val(val);
+
+
+pid = $(this).attr("comment_pk");
+
+
+})
+</script>
+
+{% endblock %}

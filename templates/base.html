@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/blog/bs/js/bootstrap.min.js"></script>
+    <script src="{% static 'plugins/daterangepicker/moment.min.js' %}"></script>
+    <script src="{% static 'plugins/fullcalendar/fullcalendar.min.js' %}"></script>
+    <script src="{% static 'js/plugins/layer/layer.js' %}"></script>
+    <script src="{% static 'plugins/select2/select2.full.min.js' %}"></script>
+<style>
+        body {
+            cursor: url(https://cdn.jsdelivr.net/gh/mirai-mamori/web-img/img/Nor.cur), auto;
+        }
+        button {
+        cursor: url(https://cdn.jsdelivr.net/gh/mirai-mamori/web-img/img/Ayu.cur), auto;
+        }
+        a:active {
+            cursor: url(https://cdn.jsdelivr.net/gh/mirai-mamori/web-img/img/Work.cur), alias;
+        }
+        a {
+        cursor: url(https://cdn.jsdelivr.net/gh/mirai-mamori/web-img/img/Texto.cur), auto;
+        }
+        span{
+        cursor: url(https://cdn.jsdelivr.net/gh/mirai-mamori/web-img/img/no.cur), auto;
+        }
+    </style>
+</head>
+<body>
+    <!--导航-->
+    <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+        <div class="ui container">
+            <div class="ui inverted secondary stackable menu">
+                <h1 class="ui teal header item"><i class="sun icon"></i>交小团</h1>
+                    <a href="/index/1/1" class="m-item item m-mobile-hide"><i class="home icon"></i>首页</a>
+                    <a href="/hotrank/1" class="m-item item m-mobile-hide"><i class="idea icon"></i>热门</a>
+                    <a href="{% url 'searchtag' %}" class="m-item item m-mobile-hide"><i class="tags icon"></i>话题</a>
+                    <a href="{% url 'myidol' %}" class="m-item item m-mobile-hide"><i class="info icon"></i>我的关注</a>
+                    <a href="/{{ op.user.username }}/posts/{{ op.pk }}" class="m-item item m-mobile-hide"><i class="cube icon"></i>随机浏览</a>
+                <div class="m-item  right item m-mobile-hide">
+                    <div class="ui icon input">
+                        <form action = "{% url 'index' 1 1 %}" method="get">
+                            {% csrf_token %}
+                            <input type ="text" size="10" name="keyword" placeholder="标题搜索">
+                            <input type = "submit" value="搜索">
+                        </form>
+                        <i class="search link icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="ui menu toggle black icon button m-top-right m-hide">
+            <i class="sidebar icon"></i>
+        </a>
+    </nav>
+
+<!--内容填充-->
+<div class="m-padded-tb-max">
+    <div class="ui container">
+        <div class="ui stackable grid">
+        {% block content %}
+
+        {% endblock %}
+        </div>
+    </div>
+</div>
+<!--底部-->
+    <footer class="ui inverted vertical segment m-padded-tb-max">
+        <div class="ui center aligned container">
+            <div class="ui inverted divided stackable grid">
+                <div class="six wide column">
+                    <div class="ui horizontal divider header teal m-text-thin">本网站简介</div>
+                    <div class="ui inverted link list">
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">欢迎您使用我们的网站，本网站旨在连接学生组织与同学们</p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">让学生组织的宣传更高效，让同学们的了解和参与更方便</p>
+                        <p class="m-text-thin m-text-spaced m-opacity-tiny">让校园的课外生活更加丰富多彩</p>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="ui horizontal divider header teal m-text-thin">关于我们</div>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">本网站开发者经验有限，欢迎您提出宝贵的意见</p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">我们会竭尽全力提供更好的服务</p>
+                    <p class="m-text-thin m-text-spaced m-opacity-tiny">开发者：软件工程一组</p>
+                </div>
+                <div class="three wide column">
+                    <div class="ui inverted link list">
+                        <!--二维码-->
+                        <div class="ui horizontal divider header teal m-text-thin">扫码反馈</div>
+                            <div class="ui centered card" style="width: 13em;">
+                        <img src="/static/image/wechat.jpg" alt="" class="ui  rounded image">
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui inverted section divider"></div>
+            <p class="m-text-thin m-text-spaced m-opacity-tiny"> © 2022 Designed by JXT_GS</p>
+        </div>
+    </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+    <script>
+        $('.menu.toggle').click(function () {
+            $('.m-item').toggleClass('m-mobile-hide')
+        })
+
+        // document.onmousedown = function(){
+        //     if(event.button == 2){
+        //         alert("当前页面不能使用右键！");
+        //         return false;
+        //     }
+        // }
+    </script>
+
+
+</body>
+</html>

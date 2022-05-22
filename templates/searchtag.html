@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% csrf_token %}
+{% load static %}
+
+<div class="four wide column">
+<br>
+</div>
+
+<div class="eight wide column">
+<div class="ui segment">
+    <div class="ui segment">
+        <h3 class="ui teal header item"><i class="bookmark icon"></i>搜索标签</h3>
+    </div>
+    <form action = "{% url 'index' 2 1 %}" method="get">
+         {% csrf_token %}
+        <div class="ui icon input" >
+        <input type ="text"  size="30" name="keyword" placeholder="请输入你想查询的标签"/>
+        </div>
+
+        <label for="searchtag">
+        <div class="ui icon input">
+            <input type = "submit" plac="搜索标签" id="searchtag">
+            <i class="search link icon" ></i>
+        </div></label>
+    </form>
+</div>
+
+<div class="ui segment">
+    <div class="ui middle aligned three column grid">
+    {% for item in tag_list %}
+            <div class="center aligned column">
+                <i class="tag icon"></i><a href="/index/2/1?keyword={{tag.title}}"class="m-item item m-mobile-hide">{{ item.title }}</a>
+            </div>
+    {% endfor %}
+    </div>
+</div>
+</div>
+
+     
+{% endblock %}

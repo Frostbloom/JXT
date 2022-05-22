@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+{% csrf_token %}
+
+<div class="four wide column">
+    <br>
+</div>
+
+<div class="eight wide column">
+
+    <div class="ui segment">
+        <h3 class="ui teal header item"><i class="bookmark icon"></i>更换你的头像</h3>
+    </div>
+    <br>
+
+    <div class="ui segment">
+         <form id="form">
+            {% csrf_token %}
+
+            <div class="ui middle aligned two column grid">
+                <div class="center aligned column">
+                <label for="avatar">
+                    <img id="avatar_img" width=100% height=100% src="/static/blog/img/default.png" alt="">
+                </label>
+                </div>
+                <div class="center aligned column">
+                <input type="file" id="avatar" name="avatar">
+                </div>
+
+            </div>
+
+             <div class="ui center aligned basic segment">
+                <button class="ui basic orange circular button">
+                    <input type="button" class="btn btn-default mod_btn" value="submit"><span class="error"></span>
+                </button>
+            </div>
+        </form>
+
+</div>
+</div>
+
+<script>
+    // 头像预览
+    $("#avatar").change(function () {
+
+        // 获取用户选中的文件对象
+        var file_obj = $(this)[0].files[0];
+        // 获取文件对象的路径
+        var reader = new FileReader();
+        reader.readAsDataURL(file_obj);
+        // 修改img的src属性 ，src=文件对象的路径
+        reader.onload = function () {
+            $("#avatar_img").attr("src", reader.result)
+        };
+
+    });
+
+    // 基于Ajax提交数据
+
+    $(".mod_btn").click(function () {
+        //console.log($("#form").serializeArray());
+        var formdata = new FormData();
+        var request_data = $("#form").serializeArray();
+        $.each(request_data, function (index, data) {
+            formdata.append(data.name, data.value)
+        });
+
+        
+        formdata.append("avatar", $("#avatar")[0].files[0]);
+
+
+        $.ajax({
+            url: "",
+            type: "post",
+            contentType: false,
+            processData: false,
+            data: formdata,
+            success: function (data) {
+                //console.log(data);
+
+                if (data) {
+                    // 注册成功
+                    location.href="/index/1/1"
+                }
+                
+            }
+        })
+
+    })
+</script>
+{% endblock %}
